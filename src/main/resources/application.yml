@@ -1,0 +1,21 @@
+server:
+  port: 8080  # This sets the application to run on port 8080
+
+spring:
+  profiles:
+    active: db  # Activate the 'dev' profile for development settings
+  datasource:
+    url: jdbc:postgresql://ep-gentle-bread-ag4252zt-pooler.c-2.eu-central-1.aws.neon.tech/expensedb?user=neondb_owner&password=npg_lVjKAbg8hI9H&sslmode=require&channelBinding=require
+    driver-class-name: org.postgresql.Driver
+    username: neondb_owner
+    password: npg_lVjKAbg8hI9H
+    platform: h2  # Specify H2 as the database platform
+  h2:
+    console:
+      enabled: true  # Enable the H2 console at runtime
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update  # Automatically update the database schema
+    show-sql: true  # Show SQL queries in the logs
+    database-platform: org.hibernate.dialect.PostgreSQLDialect  # Specify H2 dialect for Hibernate

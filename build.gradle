@@ -1,0 +1,44 @@
+plugins {
+    id("org.springframework.boot") version "4.0.0-RC1"
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'java'
+}
+
+group = 'my.app'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+tasks.withType(JavaExec).configureEach {
+    executable = null
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+dependencies {
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.springframework.boot:spring-boot-h2console'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly   'com.h2database:h2'
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    // https://mvnrepository.com/artifact/tools.jackson.core/jackson-databind
+    implementation group: 'tools.jackson.core', name: 'jackson-databind', version: '3.0.1'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
