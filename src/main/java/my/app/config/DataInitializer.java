@@ -1,6 +1,5 @@
 package my.app.config;
 
-import aQute.bnd.annotation.metatype.Meta;
 import my.app.model.Role;
 import my.app.model.User;
 import my.app.repository.UserRepository;

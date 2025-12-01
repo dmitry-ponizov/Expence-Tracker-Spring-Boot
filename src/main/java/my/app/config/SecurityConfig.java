@@ -1,6 +1,5 @@
 package my.app.config;
 
-import my.app.model.Role;
 import my.app.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,15 +35,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-       http.csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
-              .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-           .authorizeHttpRequests(auth -> auth
-               .requestMatchers("/signup","/login")
-                   .permitAll()
-                   .requestMatchers("/admin/**").hasRole("ADMIN")
-                   .anyRequest().hasRole("USER")
-           )
-               .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/signup","/login")
+                        .permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().hasRole("USER")
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

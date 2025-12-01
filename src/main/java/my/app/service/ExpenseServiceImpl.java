@@ -3,8 +3,6 @@ package my.app.service;
 import my.app.model.Expense;
 import my.app.model.User;
 import my.app.repository.ExpenseRepository;
-import my.app.utils.ExpenseDataLoader;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

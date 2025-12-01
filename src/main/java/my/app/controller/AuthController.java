@@ -3,9 +3,7 @@ package my.app.controller;
 import my.app.dto.AppUserDTO;
 import my.app.dto.AuthDTO;
 import my.app.dto.AuthResponseDTO;
-import my.app.model.User;
 import my.app.service.AuthService;
-import my.app.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,11 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AuthController {
-    private final UserService userService;
     private final AuthService authService;
 
-    public AuthController(UserService userService, AuthService authService, PasswordEncoder passwordEncoder) {
-        this.userService = userService;
+    public AuthController(AuthService authService, PasswordEncoder passwordEncoder) {
         this.authService = authService;
         this.passwordEncoder = passwordEncoder;
     }
