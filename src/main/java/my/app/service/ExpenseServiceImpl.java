@@ -1,39 +1,54 @@
 package my.app.service;
 
 import my.app.model.Expense;
+import my.app.model.User;
+import my.app.repository.ExpenseRepository;
 import my.app.utils.ExpenseDataLoader;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
-@Profile("json")
 public class ExpenseServiceImpl implements ExpenseService {
 
     private static final AtomicLong idCounter = new AtomicLong();
+    private final ExpenseRepository expenseRepository;
+    private final UserService userService;
+
+    public ExpenseServiceImpl(ExpenseRepository expenseRepository, UserService userService) {
+        this.expenseRepository = expenseRepository;
+        this.userService = userService;
+    }
 
     @Override
-    public List<Expense> getExpenseByDay(String date) {
-        return ExpenseDataLoader.getExpesnes()
+    public List<Expense> getAllExpenses(Long userId) {
+        return new ArrayList<>(expenseRepository.findByUserIdOrderByDateDesc(userId));
+    }
+
+    @Override
+    public List<Expense> getExpenseByDay(String date, Long userId) {
+        return expenseRepository.findByUserIdOrderByDateDesc(userId)
                 .stream()
-                .filter(expense ->  expense.getDate().equalsIgnoreCase(date))
+                .filter(expense -> expense.getDate().equals(date))
                 .toList();
     }
 
     @Override
-    public List<Expense> getExpenseByCategoryAndMonth(String category, String month) {
-        return ExpenseDataLoader.getExpesnes()
+    public List<Expense> getExpenseByCategoryAndMonth(String category, String month, Long userId) {
+
+        return expenseRepository.findByUserIdOrderByDateDesc(userId)
                 .stream()
                 .filter(expense ->  expense.getCategory().equalsIgnoreCase(category) && expense.getDate().startsWith(month))
                 .toList();
     }
 
     @Override
-    public List<String> getAllExpenseCategories() {
-        return ExpenseDataLoader.getExpesnes()
+    public List<String> getAllExpenseCategories(Long userId) {
+        return expenseRepository.findByUserIdOrderByDateDesc(userId)
                     .stream()
                     .map(Expense::getCategory)
                     .distinct()
@@ -41,24 +56,30 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
 
     @Override
-    public Optional<Expense> getExpenseById(long id) {
-        return ExpenseDataLoader.getExpesnes().stream().filter(expense -> expense.getId() == id).findFirst();
+    public Optional<Expense> getExpenseById(Long id, Long userId) {
+        return expenseRepository.findByIdAndUserId(id,userId).stream().filter(expense -> expense.getId() == id).findFirst();
     }
 
     @Override
-    public Expense addExpense(Expense expense) {
-         expense.setId(idCounter.incrementAndGet());
-         ExpenseDataLoader.getExpesnes().add(expense);
-         return expense;
+    public Expense addExpense(Expense expense, Long userId) {
+        Optional<User> optionalUser = userService.findUserById(userId);
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            expense.setUser(user);
+            return expenseRepository.save(expense);
+        } else {
+             throw new IllegalArgumentException("User not found");
+        }
+
     }
 
     @Override
-    public boolean updateExpense(Expense expense) {
-      Optional<Expense> existingExpense = getExpenseById(expense.getId());
+    public boolean updateExpense(Expense expense, Long userId) {
+      Optional<Expense> existingExpense = expenseRepository.findByIdAndUserId(expense.getId(), userId);
 
         if(existingExpense.isPresent()) {
-           ExpenseDataLoader.getExpesnes().remove(existingExpense.get());
-           ExpenseDataLoader.getExpesnes().add(expense);
+           expense.setUser(existingExpense.get().getUser());
+           expenseRepository.save(expense);
            return true;
         }
         return false;
@@ -66,12 +87,13 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public boolean deleteExpense(long id) {
-        Optional<Expense> existingExpense = getExpenseById(id);
+    public boolean deleteExpense(Long id, Long userId) {
+        Optional<Expense> existingExpense = expenseRepository.findByIdAndUserId(id, userId);
         if(existingExpense.isPresent()) {
-            ExpenseDataLoader.getExpesnes().remove(existingExpense.get());
+            expenseRepository.deleteById(id);
             return true;
         }
         return false;
     }
+
 }

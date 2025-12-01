@@ -6,16 +6,18 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ExpenseService {
-    List<Expense> getExpenseByDay(String date);
-    List<Expense> getExpenseByCategoryAndMonth(String category, String month);
+    List<Expense> getAllExpenses(Long userId);
+    List<Expense> getExpenseByDay(String date, Long userId);
+    List<Expense> getExpenseByCategoryAndMonth(String category, String month, Long userId);
 
-    List<String> getAllExpenseCategories();
+    List<String> getAllExpenseCategories(Long userId);
 
-    Optional<Expense> getExpenseById(long id);
+    Optional<Expense> getExpenseById(Long id, Long userId);
 
-    Expense addExpense(Expense expense);
+    Expense addExpense(Expense expense, Long userId);
 
-    boolean updateExpense(Expense expense);
+    boolean updateExpense(Expense expense, Long userId);
 
-    boolean deleteExpense(long id);
+    boolean deleteExpense(Long id, Long userId);
+
 }

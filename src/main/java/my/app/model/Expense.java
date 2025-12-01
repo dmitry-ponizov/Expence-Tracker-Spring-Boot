@@ -1,10 +1,8 @@
 package my.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -26,4 +24,8 @@ public class Expense {
 
     private String note;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn( name = "user_id")
+    @JsonIgnore
+    private User user;
 }
