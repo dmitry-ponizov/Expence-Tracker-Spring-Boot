@@ -24,7 +24,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -35,15 +36,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/signup","/login")
-                        .permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().hasRole("USER")
+        http
+                // Disable CSRF as we are using stateless authentication
+                .csrf(csrf -> csrf.disable())
+                // Set session management to stateless
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // No sessions will be created
+                )
+                // Configure endpoint security
+                .authorizeHttpRequests(authz ->
+                        authz
+                                .requestMatchers("/signup", "/login").permitAll() // Allow access to signup and login endpoints
+                                .requestMatchers("/admin/**").hasRole("ADMIN") // Only ADMIN role can access /admin/**
+                                .anyRequest().hasRole("USER") // All other endpoints require USER role
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // Additional configuration can go here (e.g., JWT filters)
 
         return http.build();
     }
