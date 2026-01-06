@@ -25,7 +25,8 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponseDTO> signup(@RequestBody AppUserDTO appUserDTO) {
-    AuthResponseDTO responseDTO = authService.registerUser(appUserDTO);
+        System.out.println("SIGNUP DTO = " + appUserDTO);
+        AuthResponseDTO responseDTO = authService.registerUser(appUserDTO);
 
         if("success".equals(responseDTO.getMessage())){
             return ResponseEntity.ok(responseDTO);
